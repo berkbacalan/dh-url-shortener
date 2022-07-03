@@ -5,6 +5,9 @@ class Settings(BaseSettings):
     base_url: str = "http://localhost:8200"
     db_url: str = "sqlite:///./url.db"
 
+    class Config:
+        env_file = ".env"
+
 def get_settings() -> Settings:
     settings = Settings()
     print(f"Loading settings for: {settings.env_name}")
