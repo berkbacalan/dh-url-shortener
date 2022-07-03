@@ -47,7 +47,7 @@ def get_urls(db: Session = Depends(get_db)):
 
 
 @app.get("/{url_key}")
-def forward_to_target_url(
+def redirect_to_url(
         url_key: str,
         db: Session = Depends(get_db)
     ):
@@ -57,6 +57,8 @@ def forward_to_target_url(
         .first()
     )
     if db_url:
+        db_url.clicks = db_url.clicks + 1
+        db.commit()
         return RedirectResponse(db_url.original_url)
     else:
         HTTPException(status_code=404, detail="No url with this key.")
