@@ -28,15 +28,26 @@ def read_root():
 @app.post("/url", response_model=URLInfo)
 def create_url(url: URLBase, db: Session = Depends(get_db)):
 
-    short_url = generate_short_url()
-    db_url = models.URL(
-        original_url=url.original_url, short_url=short_url
-    )
-    db.add(db_url)
-    db.commit()
-    db.refresh(db_url)
+    url_exists = db.query(models.URL).filter(models.URL.original_url == url.original_url).first()
+    
+    if bool(url_exists):
+        return url_exists
+    else:
+        while True:
+            short_url = generate_short_url()
+            short_url_exist = bool(db.query(models.URL)
+            .filter(models.URL.short_url == short_url)
+            .first())
+            if not short_url_exist:
+                break
+        db_url = models.URL(
+            original_url=url.original_url, short_url=short_url
+        )
+        db.add(db_url)
+        db.commit()
+        db.refresh(db_url)
 
-    return db_url
+        return db_url
 
 
 @app.get("/list", response_model=URLListResponse)
