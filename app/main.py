@@ -1,12 +1,12 @@
-from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import RedirectResponse
-import string
-import random
 
 from sqlalchemy.orm import Session
 
+from app.helper import generate_short_url
+
 from . import models
-from .schema import URLInfo, URL, URLBase, URLListResponse
+from .schema import URLInfo, URLBase, URLListResponse
 from .database import SessionLocal, engine
 
 
@@ -28,7 +28,7 @@ def read_root():
 @app.post("/url", response_model=URLInfo)
 def create_url(url: URLBase, db: Session = Depends(get_db)):
 
-    short_url = ''.join(random.choice(string.ascii_lowercase) for i in range(6))
+    short_url = generate_short_url()
     db_url = models.URL(
         original_url=url.original_url, short_url=short_url
     )
