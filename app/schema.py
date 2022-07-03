@@ -15,3 +15,6 @@ class URLInfo(URL):
 
 class URLListResponse(BaseModel):
     __root__ : List[URLInfo]
+
+class CreateURLResponse(BaseModel):
+    url : str

@@ -1,13 +1,14 @@
-from fastapi import FastAPI, Depends, HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi import FastAPI, Depends
+from fastapi.responses import RedirectResponse, JSONResponse
 
 from sqlalchemy.orm import Session
 
 from app.helper import generate_short_url
 
 from . import models
-from .schema import URLInfo, URLBase, URLListResponse
+from .schema import URLBase, URLListResponse, CreateURLResponse
 from .database import SessionLocal, engine
+from .config import BASE_URL, PROTOCOL
 
 
 app = FastAPI()
@@ -25,13 +26,13 @@ def read_root():
     return "Default backend with status 200"
 
 
-@app.post("/url", response_model=URLInfo)
+@app.post("/url", response_model=CreateURLResponse)
 def create_url(url: URLBase, db: Session = Depends(get_db)):
 
     url_exists = db.query(models.URL).filter(models.URL.original_url == url.original_url).first()
-    
+
     if bool(url_exists):
-        return url_exists
+        res = CreateURLResponse(url=BASE_URL+url_exists.short_url)
     else:
         while True:
             short_url = generate_short_url()
@@ -47,7 +48,9 @@ def create_url(url: URLBase, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(db_url)
 
-        return db_url
+        res = CreateURLResponse(url=BASE_URL+db_url.short_url)
+
+    return res
 
 
 @app.get("/list", response_model=URLListResponse)
@@ -67,9 +70,9 @@ def redirect_to_url(
         .filter(models.URL.short_url == url_key)
         .first()
     )
-    if db_url:
+    if bool(db_url):
         db_url.clicks = db_url.clicks + 1
         db.commit()
-        return RedirectResponse(db_url.original_url)
+        return RedirectResponse(url=PROTOCOL+db_url.original_url)
     else:
-        HTTPException(status_code=404, detail="No url with this key.")
+        return JSONResponse(status_code=404, content="No url with this key.")
