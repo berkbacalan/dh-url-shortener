@@ -56,5 +56,5 @@ curl -X 'POST' \
   -H 'accept: application/json'
  ````
  
- ### Send get request to http://localhost:8000/{url_key}
- ### url_key is short url of original url. This endpoint redirects the original url. 
+ #### Send get request to http://localhost:8000/{url_key}
+ #### url_key is short url of original url. This endpoint redirects the original url. 
