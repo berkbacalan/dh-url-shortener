@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 class URLBase(BaseModel):
     original_url: str
@@ -11,3 +12,6 @@ class URL(URLBase):
 
 class URLInfo(URL):
     short_url: str
+
+class URLListResponse(BaseModel):
+    __root__ : List[URLInfo]
