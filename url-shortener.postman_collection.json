@@ -1,0 +1,96 @@
+{
+	"info": {
+		"_postman_id": "7a3dd689-8a49-48cd-baef-149679ddbe87",
+		"name": "url-shortener",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "7907620"
+	},
+	"item": [
+		{
+			"name": "Healthcheck",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					}
+				],
+				"url": "http://localhost:8000/"
+			},
+			"response": []
+		},
+		{
+			"name": "List urls",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					}
+				],
+				"url": "http://localhost:8000/list"
+			},
+			"response": []
+		},
+		{
+			"name": "create url",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"original_url\": \"www.example.com\"\n}"
+				},
+				"url": "http://localhost:8000/url"
+			},
+			"response": []
+		},
+		{
+			"name": "create custom url",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"original_url\": \"www.example.com\",\n  \"short_url\": \"asd\"\n}"
+				},
+				"url": "http://localhost:8000/custom-url"
+			},
+			"response": []
+		},
+		{
+			"name": "redirect url",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					}
+				],
+				"url": "http://localhost:8000/gczdib"
+			},
+			"response": []
+		}
+	]
+}
