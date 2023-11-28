@@ -1,12 +1,13 @@
 from fastapi import FastAPI, Depends
 from fastapi.responses import RedirectResponse, JSONResponse
 
+from datetime import datetime
 from sqlalchemy.orm import Session
 
 from app.helper import generate_short_url
 
 from . import models
-from .schema import URLBase, URLListResponse, CreateURLResponse
+from .schema import URLBase, URLListResponse, CreateURLResponse, CustomUrl
 from .database import SessionLocal, engine
 from .config import BASE_URL, PROTOCOL
 
@@ -53,6 +54,24 @@ def create_url(url: URLBase, db: Session = Depends(get_db)):
     return res
 
 
+@app.post("/custom-url", response_model=CreateURLResponse)
+def create_url(url: CustomUrl, db: Session = Depends(get_db)):
+    short_url_exists = db.query(models.URL).filter(models.URL.short_url == url.short_url).first()
+    if bool(short_url_exists):
+        return JSONResponse(status_code=400, content="Short url you desired already in use.")
+
+    db_url = models.URL(
+        original_url=url.original_url, short_url=url.short_url
+    )
+
+    db.add(db_url)
+    db.commit()
+    db.refresh(db_url)
+    res = CreateURLResponse(url=BASE_URL+db_url.short_url)
+
+    return res
+
+
 @app.get("/list", response_model=URLListResponse)
 def get_urls(db: Session = Depends(get_db)):
     urls = db.query(models.URL).all()
@@ -67,7 +86,7 @@ def redirect_to_url(
     ):
     db_url = (
         db.query(models.URL)
-        .filter(models.URL.short_url == url_key)
+        .filter(models.URL.short_url == url_key and models.URL.expiry_date <= datetime.utcnow())
         .first()
     )
     if bool(db_url):

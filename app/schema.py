@@ -4,6 +4,9 @@ from typing import List
 class URLBase(BaseModel):
     original_url: str
 
+class CustomUrl(URLBase):
+    short_url: str
+
 class URL(URLBase):
     clicks: int
 

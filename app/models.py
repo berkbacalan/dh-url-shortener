@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String
+from datetime import datetime, timedelta
+from sqlalchemy import Column, Integer, String, DateTime
 
 from .database import Base
 
@@ -9,3 +10,5 @@ class URL(Base):
     original_url = Column(String, index=True)
     short_url = Column(String, index=True)
     clicks = Column(Integer, default=0)
+    created_date = Column(DateTime, default=datetime.utcnow())
+    expiry_date = Column(DateTime, default=datetime.utcnow() + timedelta(days=30))
